@@ -1,44 +1,59 @@
+# .gitignore for the HAR comparative genomics project
 # Local assistant/tool state
 .claude/
 
-# Logs
-logs/
-*.log
-
-# Python caches and local environments
+# ---- Data  ----
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+ 
+# ---- Logs (runtime artefacts, noisy in diffs) ----
+logs/*
+!logs/.gitkeep
+ 
+# ---- Outputs we might want to commit selectively later ----
+# Figures and tables intended for the poster live here. Keep them out
+# of git by default — promote them explicitly with `git add -f` when
+# they are finalised for the poster/paper.
+outputs/figures/*
+outputs/tables/*
+outputs/models/*
+outputs/reports/*
+!outputs/figures/.gitkeep
+!outputs/tables/.gitkeep
+!outputs/models/.gitkeep
+!outputs/reports/.gitkeep
+ 
+# ---- Python ----
 __pycache__/
 *.py[cod]
+*$py.class
+*.egg-info/
 .pytest_cache/
-.mypy_cache/
 .ruff_cache/
+.mypy_cache/
 .ipynb_checkpoints/
+ 
+# ---- Virtual environments (conda + pip fallbacks) ----
 .venv/
 venv/
 env/
-.env
-
-# Editor / OS noise
-.DS_Store
-Thumbs.db
+# Conda envs normally live under ~/miniconda3/envs, but catch in-repo ones too:
+.conda/
+ 
+# ---- Editor / OS cruft ----
 .vscode/
 .idea/
 *.swp
-*.swo
-
-# Temporary pipeline files
-*.tmp
-*.temp
-*.bak
-.tmp.*
-*.bed.tmp
-
-# Local genomics data and generated analysis artifacts.
-# Keep these files locally for analysis, but do not add them to Git/GitHub.
-data/*
-!data/conservation/
-data/conservation/*
-!data/conservation/remote_urls.txt
-
-features/
-models/
-results/
+.DS_Store
+Thumbs.db
+ 
+# ---- Jupyter scratch ----
+*.ipynb_checkpoints
+.jupyter/
+ 
+# ---- Secrets (just in case — we don't use any yet, but good hygiene) ----
+.env
+*.key
+*.pem

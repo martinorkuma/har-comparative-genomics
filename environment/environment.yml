@@ -1,0 +1,34 @@
+# environment/environment.yml
+# Conda environment definition for the HAR comparative genomics project.
+#
+# Create the environment:
+#   conda env create -f environment/environment.yml
+# Activate it:
+#   conda activate har-ml
+# Update after adding a dependency here:
+#   conda env update -f environment/environment.yml --prune
+#
+# The `bash setup_env.sh` helper does all of the above automatically.
+
+name: har-ml
+
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults      # explicitly avoid the "defaults" channel for reproducibility
+
+dependencies:
+  # ---- Python ----
+  - python=3.12
+
+  # ---- Bioinformatics binaries (bioconda) ----
+  - bedtools=2.31.*              # interval arithmetic — core of every phase
+  - ucsc-liftover=469             # hg18 -> hg38 HAR coordinate conversion
+  - ucsc-bigwigaverageoverbed=469 # phastCons/phyloP scores over HARs/CNEs (Phase 2)
+
+  # ---- Pip inside conda (for Python packages not well-packaged on conda) ----
+  # Everything else goes through pip so we keep a single source of truth
+  # in requirements.txt — easier for a reviewer to audit.
+  - pip
+  - pip:
+      - -r requirements.txt

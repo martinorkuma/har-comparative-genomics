@@ -1,0 +1,37 @@
+# environment/requirements.txt
+# Python dependencies for the HAR comparative genomics project.
+#
+# Install into the active (conda) environment:
+#   pip install -r environment/requirements.txt
+#
+# Pinning strategy: minor-version pins (~=) on analysis-critical packages to
+# lock in reproducible behaviour for the semester, looser pins on utilities.
+
+# ---- Core scientific Python (Phase 1-4) ----
+pandas~=2.2
+numpy~=1.26
+scipy~=1.13
+
+# ---- Machine learning + interpretation (Phase 3-4) ----
+scikit-learn~=1.5
+shap~=0.45
+
+# ---- Plotting (Phase 2-4, poster figures) ----
+matplotlib~=3.9
+seaborn~=0.13
+
+# ---- Genomics utilities (Phase 2) ----
+# pybedtools wraps bedtools in Python — useful for mixed bash/Python workflows.
+pybedtools~=0.10
+# biopython — FASTA parsing, GC content, sequence handling.
+biopython~=1.84
+
+# ---- Poster / report generation (Phase 4 deliverables) ----
+reportlab~=4.2
+pypdf~=4.3
+
+# ---- Developer quality-of-life ----
+# Jupyter is optional but handy for exploring intermediate outputs.
+jupyterlab~=4.2
+# ipykernel lets the .venv/conda env show up as a kernel in Jupyter.
+ipykernel~=6.29

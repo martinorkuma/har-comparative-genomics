@@ -12,80 +12,66 @@ HARs will be enriched near, or linked to, genes involved in neurodevelopment and
 
 ---
 
-## Pipeline
+### Quick start
 
-### Step 1 — Data Acquisition
+```Bash
+# 1. one-time setup (creates the conda env 'har-ml' and project directories)
+bash setup_env.sh
 
-1. **Compile HAR set** from published datasets (Pollard lab, Keough et al. 2023, Doan et al. 2016).
-2. **Construct matched comparison set** of conserved non-accelerated noncoding elements, controlling for length and conservation level.
-3. **Obtain genomic/functional data** from UCSC Genome Browser, Ensembl, and NCBI Gene/GenBank.
+# 2. activate the env — required before every pipeline run
+conda activate har-ml
 
-**Tools:** UCSC Table Browser, BEDTools, NCBI datasets CLI, Ensembl BioMart.
+# 3. Phase 1 — download HARs + reference data, liftOver, build matched CNEs
+bash scripts/01_data_acquisition/run_phase1.sh
+```
 
-### Step 2 — Feature Engineering
+### Requirements
 
-For each element (HAR or matched control), compute:
+- conda or mamba
+- WSL (Ubuntu) / Linux / macOS
 
-| Feature | Description |
-|---|---|
-| GC content | Fraction of G+C bases |
-| Element length | Span in bp |
-| Conservation metrics | Mean phyloP / phastCons score across the element |
-| Regulatory annotation overlap | Overlap with ENCODE cCREs, enhancer marks (H3K27ac, H3K4me1) |
-| Distance to nearest gene | bp to nearest TSS |
-| Distance to nearest brain-related gene | bp to nearest TSS of a gene expressed in brain (BrainSpan / HPA) |
-| Local TE density | Transposable element coverage in flanking window |
+### Pipeline phases
+```Bash 
+# Data acquisition 
+scripts/01_data_acquisition/
 
-**Tools:** BEDTools, pandas, Biopython (SeqUtils for GC), UCSC bigWigAverageOverBed.
+# Feature engineering 
+scripts/02_feature_engineering/
 
-### Step 3 — Classification
+# Classification 
+scripts/03_classification/
 
-1. **Baseline model:** Logistic regression.
-2. **Nonlinear model:** Random forest.
-3. **Validation:** Stratified k-fold cross-validation.
-4. **Metrics:** Accuracy, precision, recall, F1, ROC-AUC.
-
-**Tools:** scikit-learn.
-
-### Step 4 — Interpretation
-
-1. Feature importance from random forest.
-2. SHAP values for per-feature, per-sample explanations.
-3. Identify which features contribute most strongly to HAR classification.
-
-**Tools:** SHAP, matplotlib, seaborn.
-
+# Interpretation 
+scripts/04_interpretation/
+```
 
 ## Directory Structure
 
 ```Text
 har_project/
-├── data/
-│   ├── hars/              # HAR BED files from published sources
-│   ├── controls/          # Matched conserved non-accelerated elements
-│   ├── annotations/       # cCREs, enhancer marks, TE annotations
-│   ├── conservation/      # phyloP, phastCons tracks
-│   └── genes/             # Gene coordinates, brain-gene lists
-├── features/
-│   └── feature_matrix.csv
-├── models/
-│   ├── logistic_reg.pkl
-│   └── random_forest.pkl
-├── results/
-│   ├── figures/
-│   ├── tables/
-│   └── shap/
+├── setup_env.sh                       # one-command env + directory setup
+├── environment/
+│   ├── environment.yml                # conda dependencies (bedtools, liftOver, UCSC tools, python)
+│   └── requirements.txt               # pip dependencies (pandas, sklearn, shap, ...)
 ├── scripts/
-│   ├── 01_download_data.sh
-│   ├── 02_build_controls.py
-│   ├── 03_compute_features.py
-│   ├── 04_train_models.py
-│   ├── 05_shap_analysis.py
-│   └── 06_make_figures.py
-├── paper/
-│   └── draft.md
-├── poster/
-└── README.md
+│   └── 01_data_acquisition/
+│       ├── 00_setup_check.sh          # verifies the env before running the pipeline
+│       ├── 01_download_hars.sh        # Pollard-lab HAR BEDs (hg18)
+│       ├── 02_download_references.sh  # phastCons, GENCODE, liftOver chain
+│       ├── 03_liftover_hars.sh        # hg18 -> hg38
+│       ├── 04_build_matched_cnes.py   # length-matched CNE control set
+│       ├── run_phase1.sh              # runs the whole phase
+│       └── README.md                  # phase-level details
+├── data/
+│   ├── raw/                           # downloaded, never edited (gitignored)
+│   └── processed/                     # derived by the pipeline (gitignored)
+├── logs/                              # runtime logs (gitignored)
+├── outputs/
+│   ├── figures/                       # poster figures
+│   ├── tables/                        # poster tables
+│   ├── models/                        # trained classifiers
+│   └── reports/                       # written paper drafts
+└── .gitignore
 ```
 
 
@@ -95,3 +81,4 @@ har_project/
 - Doan et al. (2016). Mutations in human accelerated regions disrupt cognition and social behavior. *Cell* 167:341–354.
 - Keough et al. (2023). Three-dimensional genome rewiring in loci with human accelerated regions. *Science* 380:eabm1696.
 - Levchenko et al. (2018). Human accelerated regions and other human-specific sequence variations in the context of evolution and their relevance for brain development. *Genome Biol Evol* 10:166–188.
+- Pollard et al. (2006).
