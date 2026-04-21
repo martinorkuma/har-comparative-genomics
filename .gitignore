@@ -1,0 +1,44 @@
+# Local assistant/tool state
+.claude/
+
+# Logs
+logs/
+*.log
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+.env
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary pipeline files
+*.tmp
+*.temp
+*.bak
+.tmp.*
+*.bed.tmp
+
+# Local genomics data and generated analysis artifacts.
+# Keep these files locally for analysis, but do not add them to Git/GitHub.
+data/*
+!data/conservation/
+data/conservation/*
+!data/conservation/remote_urls.txt
+
+features/
+models/
+results/
