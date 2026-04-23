@@ -1,0 +1,168 @@
+# Written Paper Outline
+
+**Target:** ~6-8 pages, single column, 11 pt, 1.15 line spacing, including figures
+(adjust to course guidelines).
+
+The paper is the *long form* of the same story the talk and poster tell. It can carry
+detail the talk can't — but it should not introduce new arguments. If something
+isn't on the poster, ask whether it really belongs in the paper.
+
+---
+
+## Section budget
+
+| Section | Target length | Purpose |
+|---|---|---|
+| Abstract | 150-200 words | Self-contained summary; the only part many readers will read. |
+| Introduction | ~1 page | Motivate HARs + the open question; end with a sharp hypothesis. |
+| Methods | ~1.5 pages | Reproducible. Reads like a recipe, not a story. |
+| Results | ~2 pages | Three subsections: features → classification → interpretation. |
+| Discussion | ~1 page | Biological interpretation, limitations, future work. |
+| References | ~0.5 page | ~15 references max. |
+| Figures (4) + Tables (2) | inline | See list below. |
+
+---
+
+## Abstract (150-200 words)
+
+Single paragraph, structured roughly:
+
+- **Background (1-2 sentences):** HARs are noncoding regions conserved across
+  vertebrates with rapid human-lineage substitution; their distinctive functional
+  contexts remain incompletely characterized.
+- **Question/approach (2-3 sentences):** We compared HARs to length- and
+  conservation-matched CNEs across 7 genomic features, then trained interpretable
+  classifiers (logistic regression and random forest) and used SHAP to identify
+  features distinguishing HARs.
+- **Result (2-3 sentences):** Top-ranked feature(s); classifier AUROC; HARE5 case
+  study.
+- **Implication (1 sentence):** What this means for the regulatory landscape of
+  human brain evolution.
+
+Write this last.
+
+---
+
+## 1. Introduction (~1 page)
+
+Three paragraphs:
+
+**P1 — What HARs are.** Define HARs. Brief history (Pollard 2006, Capra 2013).
+~96% noncoding. Multiple HAR sets in the literature; we use [the one you actually
+used and why].
+
+**P2 — Why they matter.** Enrichment near brain-expressed genes (early studies).
+Specific evidence of functional consequence: Doan 2016 cognitive/behavioral
+mutations, Boyd 2015 HARE5/FZD8 transgenic mouse cortex enlargement, Cui 2025
+neuronal characterization. Frame these as motivating but not closing the question.
+
+**P3 — The gap and the question.** The comparison most studies make is HARs vs
+genome background, which conflates "is conserved" with "is human-accelerated". A
+matched-control design isolates the HAR-specific signal. Interpretable ML lets us
+ask which features carry that signal. End with the explicit hypothesis from the
+proposal.
+
+---
+
+## 2. Methods (~1.5 pages)
+
+Sub-headings, in order:
+
+**2.1 HAR set.** Source, n, coordinate system, liftOver from hg19 to hg38 if used.
+Cite the source paper's Table S1 or equivalent.
+
+**2.2 Matched CNE controls.** Pre-called UCSC phastCons 100-way conserved elements
+as the candidate pool. Filtering: drop any element overlapping a HAR (±10 kb buffer)
+or a coding exon. Per-HAR matching on length (±25%) and mean phastCons score (±0.05).
+3:1 sampling ratio. Random seed reported. QC table referenced.
+
+**2.3 Features.** The 7 features, each with one sentence describing what it is and
+how it's computed. Software versions for each external dataset (GENCODE v45, GTEx
+v8, ENCODE cCRE combined track, Roadmap E081/E082 25-state imputed).
+
+**2.4 Brain-expressed gene set.** GTEx v8 median TPM > 5 in any of 13 brain
+tissues. Cite the GTEx Consortium paper.
+
+**2.5 Classification.** Logistic regression (max_iter=5000, balanced class weight,
+log1p transform on length and distance features, standardized) and random forest
+(500 trees, no max depth, balanced class weight). Stratified 5-fold cross-validation.
+Metrics reported: AUROC, AUPRC, accuracy, F1.
+
+**2.6 Interpretation.** SHAP TreeExplainer on the random forest refit on all data.
+Mean |SHAP| ranking and direction of effect. HARE5 case study by name match
+(2xHAR.238) or by genomic coordinate fallback if name absent.
+
+**2.7 Code and data availability.** GitHub repo URL, commit hash, conda env file.
+
+---
+
+## 3. Results (~2 pages)
+
+Three sub-headings:
+
+**3.1 Feature distributions, HARs vs matched CNEs.** Reference Figure 1 (the
+distributions panel). Note any features showing visible univariate separation
+*before* discussing the multivariate model.
+
+**3.2 Classification performance.** Reference Figure 2 (ROC + PR curves) and
+Table 1 (CV metrics by model and fold). State that performance is modest but
+well above chance for both models, with consistent rankings — frame this as
+support for the interpretation rather than the headline result.
+
+**3.3 Feature importance and the HARE5 case study.** Reference Figure 3 (SHAP
+beeswarm + bar) and Table 2 (top SHAP features with direction of effect). State
+top-ranked feature(s) and the direction. Then introduce HARE5 (Figure 4): show
+its feature values within the HAR/CNE distributions; note that they exemplify
+exactly what the model identifies as distinguishing.
+
+---
+
+## 4. Discussion (~1 page)
+
+**P1 — Biological interpretation.** What top SHAP features tell us about where
+in the regulatory landscape human-lineage acceleration tends to fall. Connect
+to existing literature on HAR enrichment near neurodevelopmental genes.
+
+**P2 — Why this design works.** The matched-control + interpretable-ML combination
+isolates a signal that genome-background comparisons can't, and reports it in
+units (feature contributions) that are biologically interpretable.
+
+**P3 — Limitations.** Annotation bias toward studied cell types. Linear-distance
+proxy for regulatory targeting (3D contacts would be better; cite Keough 2023).
+HAR set choice affects results — sensitivity to alternative HAR sets is a
+worthwhile follow-up.
+
+**P4 — Future work.** One paragraph. Strongest extensions: incorporate Hi-C-derived
+target genes (Keough 2023), add cell-type-specific regulatory annotations from
+single-cell brain atlases, replicate on the recent T2T great ape pan-genome HAR
+calls (Yoo, Rhie et al. 2025).
+
+---
+
+## Figures
+
+| # | Filename | What it shows | Where it's referenced |
+|---|---|---|---|
+| 1 | `feature_distributions.png` | Per-feature distributions, HAR vs CNE | §3.1 |
+| 2 | `roc_curves.png` | ROC + PR curves, 5-fold CV mean | §3.2 |
+| 3 | `shap_summary.png` | SHAP beeswarm (with `shap_bar.png` as inset) | §3.3 |
+| 4 | `hare5_case_study.png` | HARE5's feature values vs HAR/CNE distributions | §3.3 |
+
+## Tables
+
+| # | Filename | What it shows |
+|---|---|---|
+| 1 | `cv_metrics_summary.tsv` | AUROC, AUPRC, accuracy, F1 by model (mean ± SD) |
+| 2 | `top_shap_features.tsv` | Ranked features by mean |SHAP|, with direction |
+
+---
+
+## Writing checklist
+
+- [ ] Every method has enough detail that someone could re-run it from scratch
+      using only the paper + cited public data.
+- [ ] Every figure caption says what the figure *means*, not just what it shows.
+- [ ] No claim in Discussion appears without a corresponding result in §3.
+- [ ] Limitations section is honest, not performative — list things that actually
+      could change the conclusion if addressed.
+- [ ] References are uniformly formatted to course requirements.

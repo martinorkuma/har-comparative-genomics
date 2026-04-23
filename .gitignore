@@ -1,59 +1,44 @@
-# .gitignore for the HAR comparative genomics project
-# Local assistant/tool state
-.claude/
+# Data — never commit (large + reproducible from acquire script)
+data/raw/
+data/processed/
+*.bw
+*.bb
+*.bigBed
+*.bigWig
+*.fa
+*.fa.gz
+*.2bit
+*.gtf.gz
+*.gct.gz
+*.chain
+*.chain.gz
 
-# ---- Data  ----
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
- 
-# ---- Logs (runtime artefacts, noisy in diffs) ----
-logs/*
-!logs/.gitkeep
- 
-# ---- Outputs we might want to commit selectively later ----
-# Figures and tables intended for the poster live here. Keep them out
-# of git by default — promote them explicitly with `git add -f` when
-# they are finalised for the poster/paper.
+# Outputs — except keep figure/table directories tracked (with .gitkeep)
 outputs/figures/*
 outputs/tables/*
 outputs/models/*
-outputs/reports/*
 !outputs/figures/.gitkeep
 !outputs/tables/.gitkeep
 !outputs/models/.gitkeep
-!outputs/reports/.gitkeep
- 
-# ---- Python ----
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-.pytest_cache/
-.ruff_cache/
-.mypy_cache/
+*.pyc
+*.pyo
 .ipynb_checkpoints/
- 
-# ---- Virtual environments (conda + pip fallbacks) ----
+.pytest_cache/
+
+# Environment
+.env
 .venv/
-venv/
-env/
-# Conda envs normally live under ~/miniconda3/envs, but catch in-repo ones too:
-.conda/
- 
-# ---- Editor / OS cruft ----
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
 *.swp
-.DS_Store
-Thumbs.db
- 
-# ---- Jupyter scratch ----
-*.ipynb_checkpoints
-.jupyter/
- 
-# ---- Secrets (just in case — we don't use any yet, but good hygiene) ----
-.env
-*.key
-*.pem

@@ -1,0 +1,110 @@
+# Single source of truth for paths, URLs, and pipeline parameters.
+# Edit here, not in scripts.
+
+genome:
+  build: hg38
+  # FASTA used for GC content. Two-bit form is fine; we'll convert.
+  fasta_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
+
+# ---- HARs ----------------------------------------------------------------
+# We use the Doan et al. 2016 HAR set (n=2737, hg19) and lift to hg38.
+# The supplemental table is published with the Cell paper.
+# If you have a different HAR set in hg38 BED already, drop it at:
+#   data/raw/hars.user.bed
+# and the acquire script will skip downloading and lifting.
+hars:
+  source: doan2016                        # one of: doan2016, capra2013, user
+  doan2016_url: >-
+    https://www.cell.com/cms/10.1016/j.cell.2016.08.071/attachment/9d68dee1-d4ef-4d5b-baee-2c43d12e22e6/mmc2.xlsx
+  # Liftover chain hg19 -> hg38
+  chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
+
+# ---- Conserved non-accelerated elements (control set) -------------------
+cnes:
+  # Pre-called phastCons 100-way "most conserved elements" — the candidate pool
+  # from which we'll sample CNEs. This is a bigBed at UCSC.
+  phastcons_elements_url: >-
+    https://hgdownload.soe.ucsc.edu/goldenPath/hg38/phastConsElements100way/hg38.phastConsElements100way.txt.gz
+  # Per-base phastCons score bigWig — used to score each element's mean conservation.
+  phastcons_bw_url: >-
+    https://hgdownload.soe.ucsc.edu/goldenPath/hg38/phastCons100way/hg38.phastCons100way.bw
+  # We'll define CNEs as phastCons elements that:
+  #   - do NOT overlap any HAR (with a buffer)
+  #   - are length-matched to HARs (within tolerance)
+  #   - have similar mean phastCons score (within tolerance)
+  buffer_bp: 10000               # exclude phastCons elements within this distance of a HAR
+  match_ratio: 3                 # sample 3x as many CNEs as HARs (downsample at modeling time if needed)
+  length_tolerance_pct: 25       # +/- 25% length match
+  conservation_tolerance: 0.05   # +/- 0.05 mean phastCons score match
+  random_seed: 42
+
+# ---- Annotations ---------------------------------------------------------
+annotations:
+  gencode_gtf_url: >-
+    https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_45/gencode.v45.basic.annotation.gtf.gz
+  encode_ccre_url: >-
+    https://hgdownload.soe.ucsc.edu/gbdb/hg38/encode3/ccre/encodeCcreCombined.bb
+  # Roadmap Epigenomics chromHMM 25-state, fetal brain (E081 = female fetal brain, E082 = male)
+  # We'll merge "active enhancer" states (e.g., 13_EnhA1, 14_EnhA2, 15_EnhAF) across both.
+  roadmap_e081_url: >-
+    https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/E081_25_imputed12marks_dense.bed.gz
+  roadmap_e082_url: >-
+    https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/E082_25_imputed12marks_dense.bed.gz
+  roadmap_active_enhancer_states:
+    - "13_EnhA1"
+    - "14_EnhA2"
+    - "15_EnhAF"
+
+# ---- Brain-expressed gene set -------------------------------------------
+brain_genes:
+  # GTEx v8 median gene-level TPM by tissue
+  gtex_median_tpm_url: >-
+    https://storage.googleapis.com/gtex_analysis_v8/rna_seq_data/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_median_tpm.gct.gz
+  # A gene is "brain-expressed" if median TPM > tpm_threshold in any of these tissues:
+  brain_tissues:
+    - "Brain - Amygdala"
+    - "Brain - Anterior cingulate cortex (BA24)"
+    - "Brain - Caudate (basal ganglia)"
+    - "Brain - Cerebellar Hemisphere"
+    - "Brain - Cerebellum"
+    - "Brain - Cortex"
+    - "Brain - Frontal Cortex (BA9)"
+    - "Brain - Hippocampus"
+    - "Brain - Hypothalamus"
+    - "Brain - Nucleus accumbens (basal ganglia)"
+    - "Brain - Putamen (basal ganglia)"
+    - "Brain - Spinal cord (cervical c-1)"
+    - "Brain - Substantia nigra"
+  tpm_threshold: 5
+
+# ---- Modeling -----------------------------------------------------------
+modeling:
+  cv_folds: 5
+  random_seed: 42
+  rf_n_estimators: 500
+  rf_max_depth: null     # null = unrestricted; set if overfitting
+  test_class_balance: balanced  # how class_weight is set for LR/RF
+
+# ---- Case study ---------------------------------------------------------
+case_study:
+  # HARE5 = 2xHAR.238, located near FZD8 on chr10. Boyd et al. 2015.
+  # Coordinates are hg19; we'll match by name in the HAR file when possible,
+  # else by overlap with this region in hg38 (after liftOver of the whole HAR set).
+  name: "2xHAR.238"
+  alias: "HARE5"
+  # hg19 reference coordinates from Boyd 2015 Table S1
+  hg19_chrom: chr10
+  hg19_start: 35511725
+  hg19_end:   35512012
+  # If the HAR set lacks 2xHAR.238 by name, we'll find the HAR overlapping
+  # the lifted-over interval below.
+  fallback_window_bp: 5000
+
+# ---- Output paths -------------------------------------------------------
+paths:
+  raw: data/raw
+  processed: data/processed
+  figures: outputs/figures
+  tables: outputs/tables
+  models: outputs/models
+  logs: logs

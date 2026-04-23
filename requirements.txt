@@ -1,0 +1,2 @@
+# Anything not cleanly available on conda-forge / bioconda goes here.
+# Currently empty — placeholder so environment.yml's `pip: -r` is valid.

@@ -1,0 +1,42 @@
+name: har-ml
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  # core
+  - python=3.11
+  - pip
+
+  # bioinformatics CLI tools
+  - bedtools=2.31
+  - ucsc-liftover
+  - ucsc-bigbedtobed
+  - ucsc-bigwigaverageoverbed
+  - samtools
+  - tabix
+
+  # python data + ML
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn=1.5
+  - matplotlib
+  - seaborn
+  - pyyaml
+
+  # genomics in python
+  - pybedtools
+  - pyfaidx
+  - pybigwig
+
+  # interpretability
+  - shap
+
+  # nice-to-have
+  - tqdm
+  - jupyterlab
+
+  - pip:
+    - -r requirements.txt
