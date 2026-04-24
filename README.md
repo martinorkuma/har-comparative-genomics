@@ -1,75 +1,53 @@
 # HAR Comparative Genomics
 
-**Do Human Accelerated Regions (HARs) sit in distinctive genomic neighborhoods compared to
-matched conserved non-accelerated elements (CNEs)? An interpretable-ML approach.**
-
-BCG 540 — Functional Genomics — Spring 2026
+**Do Human Accelerated Regions (HARs) occupy genomic neighborhoods that differ from matched conserved non-accelerated elements (CNEs)? An interpretable machine-learning analysis.**
 
 ---
 
-## What this project does (in one sentence)
+## Overview
 
-Train a small interpretable classifier on hand-engineered genomic features for HARs vs.
-length- and conservation-matched CNEs, then use SHAP to identify *which* features
-distinguish HARs — and verify the top-ranked feature with a worked example at the
-**HARE5 / FZD8** locus (Boyd et al. 2015).
+This repository compares Human Accelerated Regions (HARs) with length- and conservation-matched conserved non-accelerated elements (CNEs) using a small set of genomic and regulatory features. 
+The analysis uses interpretable classification models to identify which features best distinguish HARs from matched controls and examines the result at the **HARE5 / FZD8** locus.
 
-## Scope discipline
+The workflow is designed to answer one central question: **which genomic features most clearly separate HARs from matched conserved elements?**
 
-This project was deliberately tightened after instructor feedback that an end-to-end
-data → model → interpretation pipeline is too much for a 10-minute talk. The pipeline
-still runs end-to-end (the poster and paper need it), but the *deliverables* are organized
-around **one central result**:
-
-> A SHAP-ranked list of features that distinguish HARs from matched CNEs, anchored by
-> the HARE5/FZD8 case study.
-
-Everything else — classifier metrics, ROC curves, feature distributions — is supporting
-material on the poster, not the talk.
-
-## Pipeline (one command)
+## Run the Pipeline
 
 ```bash
 bash setup.sh                  # one-time: conda env + tool checks
 conda activate har-ml
-bash scripts/run_all.sh        # end-to-end pipeline
+bash scripts/run_all.sh        # end-to-end pipeline 
 ```
 
-`run_all.sh` runs four stages in order:
+### Stages of the Pipeline
 
 | Stage | Script | What it does | Key output |
 |---|---|---|---|
-| 1 | `01_acquire.sh` | Download HARs, phastCons CNEs, ENCODE cCREs, GENCODE, GTEx brain expression. LiftOver HARs to hg38 if needed. | `data/raw/`, `data/processed/hars.hg38.bed`, `data/processed/cnes.hg38.bed` |
-| 2 | `02_build_features.py` | Compute 7 features per element (HAR or CNE) → one tidy table. | `data/processed/features.tsv` |
-| 3 | `03_classify.py` | Logistic regression (baseline) + Random Forest with stratified 5-fold CV. | `outputs/tables/cv_metrics.tsv`, `outputs/models/rf.pkl`, ROC figure |
-| 4 | `04_interpret.py` | SHAP values on RF; case-study panel for HARE5. | `outputs/figures/shap_summary.png`, `outputs/figures/hare5_case_study.png` |
+| 1 | `01_acquire.sh` | Downloads HARs, phastCons CNEs, ENCODE cCREs, GENCODE, and GTEx brain expression data. Lifts HAR coordinates to hg38 if needed. | `data/raw/`, `data/processed/hars.hg38.bed`, `data/processed/cnes.hg38.bed` |
+| 2 | `02_build_features.py` | Builds a feature table for HARs and CNEs. | `data/processed/features.tsv` |
+| 3 | `03_classify.py` | Trains logistic regression and random forest models with stratified 5-fold cross-validation. | `outputs/tables/cv_metrics.tsv`, `outputs/models/rf.pkl`, ROC figure |
+| 4 | `04_interpret.py` | Computes SHAP values for the random forest and generates the HARE5 case-study figure. | `outputs/figures/shap_summary.png`, `outputs/figures/hare5_case_study.png` |
 
-## Features (deliberately small set)
 
-Seven features per element. Each is justified by a specific biological hypothesis about
-*why* it might differ between HARs and CNEs.
+## Features 
+
+The analysis uses seven features for each genomic element:
 
 | # | Feature | Hypothesis if HAR-distinguishing |
 |---|---|---|
-| 1 | GC content | HARs may show compositional bias from accelerated substitution. |
-| 2 | Element length | Length affects mutation opportunity; matched in controls but kept as a sanity check. |
-| 3 | phastCons 100-way score | HARs are by definition deeply conserved before acceleration; should match CNEs (control). |
-| 4 | Distance to nearest TSS (any GENCODE gene) | Tests whether HARs sit near genes generally. |
-| 5 | **Distance to nearest brain-expressed TSS** (GTEx brain median TPM > 5) | **Core hypothesis test:** HARs preferentially flank brain-relevant genes. |
-| 6 | Overlap with ENCODE cCRE (any) | Tests whether HARs are more likely to be annotated regulatory. |
-| 7 | Overlap with fetal-brain-active enhancer (Roadmap E081/E082) | More targeted regulatory test. |
+| 1 | GC content | Tests whether HARs differ in sequence composition. |
+| 2 | Element length | Included as a control after matching. |
+| 3 | phastCons 100-way score | Captures deep conservation prior to human-lineage acceleration. |
+| 4 | Distance to nearest TSS | Measures proximity to annotated genes. |
+| 5 | Distance to nearest brain-expressed TSS | Tests whether HARs are preferentially located near brain-relevant genes. |
+| 6 | Overlap with ENCODE cCRE | Measures overlap with annotated regulatory elements. |
+| 7 | Overlap with fetal-brain-active enhancer | Provides a more specific developmental regulatory annotation. |
 
 ## The concrete example: HARE5 → FZD8
 
-`04_interpret.py` produces a dedicated case-study figure for **HARE5 (2xHAR.238)**, the
-HAR shown in Boyd et al. (2015, *Current Biology*) to drive earlier and broader cortical
-progenitor expression of *FZD8* and produce a measurably larger neocortex in transgenic
-mice. The figure shows where HARE5's feature values sit within the full HAR and CNE
-distributions — making concrete what the SHAP plot says in the abstract.
+`04_interpret.py` generates a case-study panel for HARE5 (2xHAR.238), the enhancer linked to altered FZD8 expression in developing cortex in Boyd et al. (2015). This figure places HARE5 within the full HAR and CNE feature distributions and provides a concrete example alongside the global SHAP summary.
 
-If your top SHAP feature ends up *not* being one HARE5 illustrates well, swap the case
-study by editing `CASE_STUDY_HAR` in `config.yaml`. Other good options: HAR1F (Pollard
-2006, Cajal–Retzius neurons), 2xHAR.114 (cortical enhancer activity).
+If another HAR better reflects the top-ranked feature in the final analysis, the case study can be changed by editing CASE_STUDY_HAR in config.yaml.
 
 ## Repository layout
 
@@ -101,11 +79,15 @@ har-comparative-genomics/
     └── paper_outline.md        # written paper structure
 ```
 
-## Deliverables
+## Outputs
 
-- **Poster** (primary). See `docs/poster_outline.md`.
-- **10-minute talk.** See `docs/talk_outline.md`.
-- **Written paper.** See `docs/paper_outline.md`.
+Primary outputs include:
+- Feature table for HARs and matched CNEs
+- Cross-validation performance summaries
+- Trained random forest model
+- ROC figure
+- SHAP summary plot
+- HARE5 case-study figure
 
 ## References
 
