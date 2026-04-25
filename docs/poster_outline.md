@@ -72,17 +72,11 @@ The reader's eye should land on the SHAP plot. Everything else either sets it up
   with consistent feature rankings; the project emphasizes interpretation over
   predictive accuracy."*
 
-## Panel 5 — HARE5 / FZD8 case study (top-right)
+## Panel 5 — Case study: a functionally prioritized HAR (top-right)
 
-- Use `outputs/figures/hare5_case_study.png`: HARE5's feature values (gold marker)
-  overlaid on the HAR/CNE distributions for the top-ranked features.
-- Brief biology paragraph: HARE5 is 2xHAR.238, an enhancer near *FZD8*. Boyd et al.
-  (2015) showed the human allele drives earlier and broader cortical-progenitor
-  expression than the chimp allele, producing a measurably larger neocortex in
-  transgenic mice. The features the model ranks highest are exactly the ones HARE5
-  exemplifies.
-- Optional small inset: a UCSC-style locus track snapshot of HARE5 within the
-  *FZD8* TAD, if you can grab one. Not required.
+- Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter, but HARE5 isn't in our HAR set.
+- We instead picked an in-dataset HAR that the model's top-ranked features exemplify: `Prabhakar_HAR810` near NR2C2.
+- Show `hare5_case_study.png`. Punchline: the features the model ranks highest are exactly the ones this HAR exemplifies.
 
 ## Panel 6 — Conclusions & future (bottom-right)
 

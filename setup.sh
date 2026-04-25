@@ -47,7 +47,7 @@ done
 # ---- python imports check ----
 python - <<'PY'
 import importlib, sys
-mods = ["numpy", "pandas", "scipy", "sklearn", "matplotlib", "seaborn",
+mods = ["numpy", "pandas", "scipy", "openpyxl", "sklearn", "matplotlib", "seaborn",
         "yaml", "pybedtools", "pyfaidx", "pyBigWig", "shap"]
 missing = []
 for m in mods:

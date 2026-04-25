@@ -19,6 +19,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import shap
+from scipy.stats import spearmanr
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
@@ -56,7 +57,10 @@ def find_hare5(df: pd.DataFrame) -> pd.Series | None:
 
     Two attempts, in order:
       (a) match the HAR by name (e.g. '2xHAR.238') if the HAR set used names.
-      (b) fall back to a window around the lifted hg38 coordinates of HARE5.
+      (b) liftOver HARE5's hg19 coordinates to hg38, then find the nearest HAR
+          within `fallback_window_bp`. If the nearest HAR is outside the window,
+          return None — better to skip the case study than to mislabel a
+          random nearby HAR as HARE5.
     """
     name_target = CFG["case_study"]["name"]
     hits = df[df["name"].astype(str).str.strip() == name_target]
@@ -64,24 +68,44 @@ def find_hare5(df: pd.DataFrame) -> pd.Series | None:
         print(f"[interpret] case study: matched HAR by name '{name_target}'")
         return hits.iloc[0]
 
-    # Fallback: nearest HAR to the case-study locus.
-    # We use the hg19 coordinates and naively shift; a real liftOver would be
-    # better, but for FZD8 the hg19 vs hg38 offset is tiny.
+    # Fallback: liftOver the HARE5 hg19 interval to hg38, then find the
+    # nearest HAR within a sensible window.
+    import subprocess, tempfile, os
     chrom = CFG["case_study"]["hg19_chrom"]
-    mid_hg19 = (CFG["case_study"]["hg19_start"] + CFG["case_study"]["hg19_end"]) // 2
+    s_hg19 = CFG["case_study"]["hg19_start"]
+    e_hg19 = CFG["case_study"]["hg19_end"]
+    chain = "data/raw/hg19ToHg38.over.chain.gz"
+
+    with tempfile.TemporaryDirectory() as td:
+        in_bed   = os.path.join(td, "hare5.hg19.bed")
+        out_bed  = os.path.join(td, "hare5.hg38.bed")
+        unmapped = os.path.join(td, "hare5.unmapped.bed")
+        with open(in_bed, "w") as fh:
+            fh.write(f"{chrom}\t{s_hg19}\t{e_hg19}\tHARE5\n")
+        subprocess.run(["liftOver", in_bed, chain, out_bed, unmapped], check=True)
+        if os.path.getsize(out_bed) == 0:
+            print("[interpret] WARNING: HARE5 failed liftOver; case study skipped.")
+            return None
+        with open(out_bed) as fh:
+            f = fh.readline().rstrip("\n").split("\t")
+            chrom38, s38, e38 = f[0], int(f[1]), int(f[2])
+
+    mid_hg38 = (s38 + e38) // 2
     window = CFG["case_study"]["fallback_window_bp"]
-    cand = df[(df["label"] == 1) & (df["chrom"] == chrom)].copy()
+    cand = df[(df["label"] == 1) & (df["chrom"] == chrom38)].copy()
     if cand.empty:
-        print(f"[interpret] WARNING: no HARs on {chrom}; case study unavailable.")
+        print(f"[interpret] WARNING: no HARs on {chrom38}; case study unavailable.")
         return None
     cand["mid"] = (cand["start"] + cand["end"]) // 2
-    cand["d"]   = (cand["mid"] - mid_hg19).abs()
+    cand["d"]   = (cand["mid"] - mid_hg38).abs()
     nearest = cand.sort_values("d").iloc[0]
-    if nearest["d"] > 5_000_000:
-        print(f"[interpret] WARNING: nearest HAR on {chrom} is "
-              f"{nearest['d']/1e6:.2f} Mb from HARE5 hg19 locus; check liftOver.")
-    print(f"[interpret] case study: fallback to HAR '{nearest['name']}' "
-          f"({nearest['d']:,} bp from HARE5 hg19 midpoint)")
+    if nearest["d"] > window:
+        print(f"[interpret] WARNING: nearest HAR on {chrom38} is "
+              f"{nearest['d']:,} bp from HARE5 hg38 midpoint "
+              f"(>{window:,} bp window). This is probably NOT HARE5; case study skipped.")
+        return None
+    print(f"[interpret] case study: matched HAR '{nearest['name']}' "
+          f"({nearest['d']:,} bp from HARE5 hg38 midpoint)")
     return nearest
 
 
@@ -132,17 +156,26 @@ def main() -> None:
     fig.savefig("outputs/figures/shap_bar.png", dpi=220, bbox_inches="tight")
     plt.close(fig)
 
-    # --- ranked table with mean direction (sign of mean SHAP, not |SHAP|)
-    mean_sv  = sv_pos.mean(axis=0)
-    direction = np.sign(mean_sv)
+    # --- ranked table with direction-of-effect via Spearman(feature, SHAP)
+    rho = np.array([spearmanr(X.values[:, j], sv_pos[:, j]).statistic
+                    for j in range(X.shape[1])])
+    direction_label = []
+    for j in order:
+        r = rho[j]
+        if abs(r) < 0.05:
+            direction_label.append("no clear direction")
+        elif r > 0:
+            direction_label.append("higher value -> more HAR-like")
+        else:
+            direction_label.append("higher value -> more CNE-like")
     rank_df = pd.DataFrame({
-        "feature":           [FEATURE_COLS[i] for i in order],
-        "feature_label":     [PRETTY[FEATURE_COLS[i]] for i in order],
-        "mean_abs_shap":     mean_abs[order],
-        "mean_signed_shap":  mean_sv[order],
-        "direction":         ["increases HAR prob" if direction[i] > 0 else
-                              "decreases HAR prob" for i in order],
+        "feature":          [FEATURE_COLS[i] for i in order],
+        "feature_label":    [PRETTY[FEATURE_COLS[i]] for i in order],
+        "mean_abs_shap":    mean_abs[order],
+        "spearman_feat_shap": rho[order],
+        "direction":        direction_label,
     })
+
     rank_df.to_csv("outputs/tables/top_shap_features.tsv", sep="\t", index=False)
     print("[interpret] -> outputs/figures/shap_summary.png + shap_bar.png")
     print("[interpret] -> outputs/tables/top_shap_features.tsv")

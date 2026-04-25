@@ -11,6 +11,17 @@ The analysis uses interpretable classification models to identify which features
 
 The workflow is designed to answer one central question: **which genomic features most clearly separate HARs from matched conserved elements?**
 
+## Manual data step (before running pipeline)
+
+Cell Press blocks automated downloads of supplemental files. Before running the
+pipeline, manually download Doan et al. (2016) **Table S1** (the 1.39 MB
+spreadsheet, "Combined HARs from Five Previous Studies") from:
+
+  https://www.cell.com/cell/fulltext/S0092-8674(16)31169-2
+
+Save it to `data/raw/doan2016_hars.xlsx`. The pipeline will skip the download
+attempt if the file is already present.
+
 ## Run the Pipeline
 
 ```bash

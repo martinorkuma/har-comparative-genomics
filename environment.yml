@@ -8,6 +8,7 @@ dependencies:
   # core
   - python=3.11
   - pip
+  - openpyxl
 
   # bioinformatics CLI tools
   - bedtools=2.31

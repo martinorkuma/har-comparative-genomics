@@ -72,59 +72,80 @@ elif [[ ! -s "$HAR_HG38" ]]; then
              -o "$out" "$url"
     }
  
-    download_pollard_fallback() {
-        # Canonical 2xHAR set (Pollard/Capra), hg19 BED. Mirror on GitHub.
-        # 2,649 HARs from the UCSC hgFixed mirror of Capra et al. 2013.
-        local url="https://raw.githubusercontent.com/pollardlab/har_gigapipe/main/data/hars/2xHARs.hg19.bed"
-        local alt="https://zoonomiaproject.org/wp-content/uploads/2021/01/2xHARs.hg19.bed"
-        echo "[acquire]   fallback: fetching 2xHAR canonical set (hg19)"
-        curl -L --fail --retry 3 -A "$UA" -o data/raw/hars.hg19.bed "$url" \
-            || curl -L --fail --retry 3 -A "$UA" -o data/raw/hars.hg19.bed "$alt"
-    }
- 
     case "$HAR_SOURCE" in
         doan2016)
             URL=$(yget hars.doan2016_url)
             XLSX=data/raw/doan2016_hars.xlsx
- 
+
             if [[ ! -s "$XLSX" ]]; then
                 if ! download_doan "$URL" "$XLSX"; then
-                    echo "[acquire]   WARN: Cell Press returned an error (likely 403)."
-                    echo "[acquire]   Two options:"
-                    echo "[acquire]     (a) download the supplement manually in a browser from"
-                    echo "[acquire]         https://www.cell.com/cell/fulltext/S0092-8674(16)31169-2"
-                    echo "[acquire]         and place it at $XLSX, then re-run."
-                    echo "[acquire]     (b) let this script fall back to the 2xHAR canonical set now."
+                    echo "[acquire]   ERROR: Cell Press blocks automated downloads (Cloudflare)." >&2
+                    echo "[acquire]   Download Table S1 (1.39 MB spreadsheet) manually from:" >&2
+                    echo "[acquire]     https://www.cell.com/cell/fulltext/S0092-8674(16)31169-2" >&2
+                    echo "[acquire]   Save it as: $XLSX" >&2
+                    echo "[acquire]   Then re-run this script." >&2
                     rm -f "$XLSX"
+                    exit 1
                 fi
             fi
  
             if [[ -s "$XLSX" ]]; then
                 python - <<'PY'
 import pandas as pd
+
 df = pd.read_excel("data/raw/doan2016_hars.xlsx")
-cols = {c.lower().strip(): c for c in df.columns}
-chrom = df[cols.get("chr", cols.get("chrom"))]
-start = df[cols.get("start")]
-end   = df[cols.get("end")]
-name_col = cols.get("name", cols.get("har_id", list(df.columns)[3]))
-name  = df[name_col]
-chrom = chrom.astype(str).str.replace(r"^(?!chr)", "chr", regex=True)
+print(f"[acquire]   raw columns: {df.columns.tolist()}")
+print(f"[acquire]   raw rows:    {len(df)}")
+
+# Case-insensitive lookup of column names -> original column name.
+lc = {c.lower().strip(): c for c in df.columns}
+
+def pick(*candidates):
+    for cand in candidates:
+        if cand.lower() in lc:
+            return lc[cand.lower()]
+    raise KeyError(f"None of {candidates} found in columns {df.columns.tolist()}")
+
+chrom_col = pick("chr", "chrom", "chromosome")
+start_col = pick("start", "chromstart")
+end_col   = pick("end", "chromend", "stop")
+# Doan 2016 supplement uses "HAR" for the canonical identifier;
+# pandas renames the duplicate column to "HAR.1".
+name_col  = pick("har", "har_id", "name", "har_name")
+
+chrom = df[chrom_col].astype(str).str.strip()
+chrom = chrom.where(chrom.str.startswith("chr"), "chr" + chrom)
+
 out = pd.DataFrame({
-    "chrom": chrom, "start": start.astype(int), "end": end.astype(int),
-    "name": name.astype(str), "score": 0, "strand": "+",
+    "chrom":  chrom,
+    "start":  pd.to_numeric(df[start_col], errors="coerce").astype("Int64"),
+    "end":    pd.to_numeric(df[end_col],   errors="coerce").astype("Int64"),
+    "name":   df[name_col].astype(str).str.strip(),
+    "score":  0,
+    "strand": "+",
 })
-out = out.dropna().sort_values(["chrom","start"])
+
+before = len(out)
+out = out.dropna(subset=["chrom", "start", "end", "name"])
+out = out[out["chrom"].str.match(r"^chr([0-9]+|X|Y|M)$")]
+dropped = before - len(out)
+if dropped:
+    print(f"[acquire]   dropped {dropped} malformed rows")
+
+out = out.drop_duplicates(subset=["chrom", "start", "end"])
+out = out.sort_values(["chrom", "start"]).reset_index(drop=True)
 out.to_csv("data/raw/hars.hg19.bed", sep="\t", header=False, index=False)
-print(f"[acquire]   wrote {len(out)} HARs (hg19) from Doan 2016")
+print(f"[acquire]   wrote {len(out)} HARs (hg19) -> data/raw/hars.hg19.bed")
 PY
             else
-                download_pollard_fallback
+                echo "[acquire] ERROR: Doan 2016 supplement missing. See instructions above." >&2
+                exit 1
             fi
             ;;
  
         pollard2xhar)
-            download_pollard_fallback
+            echo "ERROR: pollard2xhar source not wired. Supply data/raw/doan2016_hars.xlsx" >&2
+            exit 1
             ;;
  
         capra2013)

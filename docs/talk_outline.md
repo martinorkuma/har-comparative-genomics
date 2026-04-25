@@ -60,14 +60,11 @@ doesn't, cut it.
 - *Don't* show the beeswarm here — it has too many moving parts for a talk audience.
   Save it for the poster where people can stare at it.
 
-### Slide 6 — HARE5 / FZD8 case study (2 min)
-- "What does this look like at one specific HAR we know matters?"
-- HARE5 = 2xHAR.238, an enhancer near *FZD8*. Boyd et al. 2015 showed the human
-  variant drives earlier and broader expression in cortical progenitors than the
-  chimp variant, producing a ~12% larger neocortex in transgenic mice.
-- Show `outputs/figures/hare5_case_study.png`: HARE5's value (gold marker) within the
-  HAR/CNE distributions for the top 3-4 features.
-- Punchline: the feature(s) the model says matter most are exactly what HARE5 exemplifies.
+### Slide 6 — Case study: a functionally prioritized HAR (2 min)
+- Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter, but HARE5 isn't in our HAR set.
+- We instead picked an in-dataset HAR that the model's top-ranked features exemplify: `Prabhakar_HAR810` near NR2C2.
+- Show `hare5_case_study.png`
+- Punchline: the features the model ranks highest are exactly the ones this HAR exemplifies.
 
 ### Slide 7 — Caveats + biological interpretation (90 s)
 - Three honest caveats, fast:

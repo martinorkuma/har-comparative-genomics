@@ -15,7 +15,7 @@ genome:
 hars:
   source: doan2016                        # one of: doan2016, capra2013, user
   doan2016_url: >-
-    https://www.cell.com/cms/10.1016/j.cell.2016.08.071/attachment/9d68dee1-d4ef-4d5b-baee-2c43d12e22e6/mmc2.xlsx
+    https://www.cell.com/cms/10.1016/j.cell.2016.08.071/attachment/9e010545-053a-4166-9b0d-7cb8c8f90ca7/mmc2.xlsx
   # Liftover chain hg19 -> hg38
   chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
 
@@ -24,7 +24,7 @@ cnes:
   # Pre-called phastCons 100-way "most conserved elements" — the candidate pool
   # from which we'll sample CNEs. This is a bigBed at UCSC.
   phastcons_elements_url: >-
-    https://hgdownload.soe.ucsc.edu/goldenPath/hg38/phastConsElements100way/hg38.phastConsElements100way.txt.gz
+    https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/phastConsElements100way.txt.gz
   # Per-base phastCons score bigWig — used to score each element's mean conservation.
   phastcons_bw_url: >-
     https://hgdownload.soe.ucsc.edu/goldenPath/hg38/phastCons100way/hg38.phastCons100way.bw
@@ -59,7 +59,7 @@ annotations:
 brain_genes:
   # GTEx v8 median gene-level TPM by tissue
   gtex_median_tpm_url: >-
-    https://storage.googleapis.com/gtex_analysis_v8/rna_seq_data/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_median_tpm.gct.gz
+    https://storage.googleapis.com/adult-gtex/bulk-gex/v8/rna-seq/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_median_tpm.gct.gz
   # A gene is "brain-expressed" if median TPM > tpm_threshold in any of these tissues:
   brain_tissues:
     - "Brain - Amygdala"
@@ -87,18 +87,16 @@ modeling:
 
 # ---- Case study ---------------------------------------------------------
 case_study:
-  # HARE5 = 2xHAR.238, located near FZD8 on chr10. Boyd et al. 2015.
-  # Coordinates are hg19; we'll match by name in the HAR file when possible,
-  # else by overlap with this region in hg38 (after liftOver of the whole HAR set).
-  name: "2xHAR.238"
-  alias: "HARE5"
+  name: "Prabhakar_HAR810,Toh_HAR269"
+  alias: "Prabhakar HAR near NR2C2"
+  
   # hg19 reference coordinates from Boyd 2015 Table S1
   hg19_chrom: chr10
   hg19_start: 35511725
   hg19_end:   35512012
   # If the HAR set lacks 2xHAR.238 by name, we'll find the HAR overlapping
   # the lifted-over interval below.
-  fallback_window_bp: 5000
+  fallback_window_bp: 2000
 
 # ---- Output paths -------------------------------------------------------
 paths:
