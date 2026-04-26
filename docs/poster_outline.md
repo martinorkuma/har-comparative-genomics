@@ -21,8 +21,10 @@ The reader's eye should land on the SHAP plot. Everything else either sets it up
 │     (workflow +     │      (HAR vs CNE, small)    │     future work     │
 │      features)      │                             │                     │
 │                     ├─────────────────────────────┤                     │
-│                     │  Classifier performance     │                     │
-│                     │  (small ROC + metrics box)  │                     │
+│                     │  4b. Sensitivity: brain-TSS │                     │
+│                     │      proximity (3-way)      │                     │
+│                     │  4c. Classifier perf strip  │                     │
+│                     │      (AUROC/AUPRC table)    │                     │
 └─────────────────────┴─────────────────────────────┴─────────────────────┘
 ```
 
@@ -63,9 +65,18 @@ The reader's eye should land on the SHAP plot. Everything else either sets it up
   the model's claims against the raw distributions.
 - Small caption only; the SHAP panel does the talking.
 
-## Panel 4b — Classifier performance (small box, bottom-middle)
+## Panel 4b — Sensitivity: brain-TSS proximity (small box, middle column)
 
-- ROC + PR curves (`outputs/figures/roc_curves.png`).
+- Three-way violin from `outputs/figures/sensitivity_brain_tss.png`: HAR (red),
+  matched CNE (gray), random length-matched (blue).
+- One-sentence caption stating which pre-decided interpretation the data
+  support (matching artifact / real reversal / anomalously proximal CNEs).
+- Cite `outputs/tables/sensitivity_brain_tss.tsv` for medians and Mann-Whitney
+  U p-values inline.
+
+## Panel 4c — Classifier performance strip (smaller, below 4b)
+
+- ROC + PR curves (`outputs/figures/roc_curves.png`), single row.
 - Tiny table: AUROC, AUPRC, F1 for LR vs RF (mean ± SD across 5 folds) from
   `outputs/tables/cv_metrics_summary.tsv`.
 - One sentence: *"Both models achieve modest but well-above-chance discrimination
@@ -75,8 +86,10 @@ The reader's eye should land on the SHAP plot. Everything else either sets it up
 ## Panel 5 — Case study: HARE5 / FZD8 (top-right)
 
 - Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter.
-- HARE5/2xHAR.238 is not in the modeled Doan HAR table, so `04_interpret.py` scores the lifted-over Boyd interval as an external reference using the same feature sources.
-- Show `hare5_case_study.png`. Punchline: place the real HARE5 interval within the HAR/CNE feature distributions without treating it as a training-set observation.
+- HARE5/2xHAR.238 is not in the modeled Doan HAR table, so `04_interpret.py` scores the 
+  lifted-over Boyd interval as an external reference using the same feature sources.
+- Show `hare5_case_study.png`. Punchline: place the real HARE5 interval within the 
+  HAR/CNE feature distributions without treating it as a training-set observation.
 
 ## Panel 6 — Conclusions & future (bottom-right)
 
@@ -84,7 +97,9 @@ The reader's eye should land on the SHAP plot. Everything else either sets it up
   1. **Result:** the top SHAP feature(s) most distinguishing HARs from matched CNEs.
   2. **Biological interpretation:** HARs preferentially overlap annotated regulatory
      elements, while linear TSS distance does not support a simple "near brain genes"
-     story in this matched-control design.
+     story in this matched-control design — and the three-way sensitivity check
+     (Panel 4b) clarifies whether this reflects HAR biology or the conservation
+     matching itself. 
   3. **Limitations & next steps:** residual phastCons signal, annotation bias,
      distance-to-gene as a proxy for
      regulatory target, opportunity to extend with 3D contacts (Keough 2023) or
@@ -109,5 +124,7 @@ The reader's eye should land on the SHAP plot. Everything else either sets it up
 - [ ] Every claim that requires a citation has one.
 - [ ] HARE5 appears by name in at least Panel 1 (motivation), Panel 5 (case study),
       and Panel 6 (conclusion).
+- [ ] Sensitivity panel (4b) caption names the supported interpretation explicitly,
+      not just "see table".
 - [ ] No panel uses font smaller than 24 pt for body text.
 - [ ] Print at 25% scale on tabloid paper to sanity-check legibility.

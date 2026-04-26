@@ -25,9 +25,10 @@ attempt if the file is already present.
 ## Run the Pipeline
 
 ```bash
-bash setup.sh                  # one-time: conda env + tool checks
-conda activate har-ml
-bash scripts/run_all.sh        # end-to-end pipeline 
+bash setup.sh                                       # one-time: conda env + tool checks
+conda activate har-ml                               # activate conda virtual environ
+bash scripts/run_all.sh                             # end-to-end pipeline 
+python scripts/05_sensitivity_brain_tss.py          # runs sensitivity check
 ```
 
 ### Stages of the Pipeline
@@ -38,6 +39,9 @@ bash scripts/run_all.sh        # end-to-end pipeline
 | 2 | `02_build_features.py` | Builds a feature table for HARs and CNEs. | `data/processed/features.tsv` |
 | 3 | `03_classify.py` | Trains logistic regression and random forest models with stratified 5-fold cross-validation. | `outputs/tables/cv_metrics.tsv`, `outputs/models/rf.pkl`, ROC figure |
 | 4 | `04_interpret.py` | Computes SHAP values for the random forest and generates the HARE5 case-study figure. | `outputs/figures/shap_summary.png`, `outputs/figures/hare5_case_study.png` |
+| 5* | `05_sensitivity_brain_tss.py` | Sensitivity check: compares distance-to-nearest-brain-TSS for HARs, matched CNEs, and random length-matched intervals. Tests whether the reversed HAR-vs-CNE proximity is a conservation-matching artifact. | `outputs/figures/sensitivity_brain_tss.png`, `outputs/tables/sensitivity_brain_tss.tsv` |
+
+\* Stage 5 is a follow-up analysis and is not run by `scripts/run_all.sh`. After the main pipeline finishes, run it with `python scripts/05_sensitivity_brain_tss.py`.
 
 
 ## Features 
@@ -65,29 +69,30 @@ If another HAR better reflects the top-ranked feature in the final analysis, the
 ```
 har-comparative-genomics/
 ├── README.md
-├── setup.sh                    # one-time env setup
-├── environment.yml             # conda
-├── requirements.txt            # pip extras
-├── config.yaml                 # all paths, URLs, parameters
+├── setup.sh                         # one-time env setup
+├── environment.yml                  # conda
+├── requirements.txt                 # pip extras
+├── config.yaml                      # all paths, URLs, parameters
 ├── .gitignore
 ├── scripts/
-│   ├── 01_acquire.sh           # data download + liftOver + matched CNE construction
-│   ├── 02_build_features.py    # feature engineering
-│   ├── 03_classify.py          # LR + RF + 5-fold CV
-│   ├── 04_interpret.py         # SHAP + HARE5 case study
-│   └── run_all.sh              # orchestrator
+│   ├── 01_acquire.sh                # data download + liftOver + matched CNE construction
+│   ├── 02_build_features.py         # feature engineering
+│   ├── 03_classify.py               # LR + RF + 5-fold CV
+│   ├── 04_interpret.py              # SHAP + HARE5 case study
+│   ├── 05_sensitivity_brain_tss.py  # follow-up: brain-TSS proximity sanity check
+│   └── run_all.sh                   # orchestrator
 ├── data/
-│   ├── raw/                    # downloaded files (gitignored)
-│   └── processed/              # derived (gitignored)
+│   ├── raw/                         # downloaded files (gitignored)
+│   └── processed/                   # derived (gitignored)
 ├── outputs/
-│   ├── figures/                # poster figures
-│   ├── tables/                 # poster tables
-│   └── models/                 # trained classifiers
-├── logs/                       # per-stage logs (gitignored)
+│   ├── figures/                     # poster figures
+│   ├── tables/                      # poster tables
+│   └── models/                      # trained classifiers
+├── logs/                            # per-stage logs (gitignored)
 └── docs/
-    ├── poster_outline.md       # poster panel-by-panel
-    ├── talk_outline.md         # 10-min talk slide-by-slide
-    └── paper_outline.md        # written paper structure
+    ├── poster_outline.md            # poster panel-by-panel
+    ├── talk_outline.md              # 10-min talk slide-by-slide
+    └── paper_outline.md             # written paper structure
 ```
 
 ## Outputs

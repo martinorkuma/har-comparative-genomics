@@ -48,3 +48,21 @@ computes its features from the same external sources used for HARs and
 CNEs. The resulting figure places the real HARE5 within the HAR/CNE
 distributions without contaminating the training set. This is documented
 in scripts/04_interpret.py:build_external_hare5_row().
+
+## 4. Added: sensitivity analysis on brain-TSS proximity
+
+**Proposal:** No sensitivity analysis specified.
+
+**Implementation:** `scripts/05_sensitivity_brain_tss.py` adds a three-way
+comparison of distance-to-nearest-brain-expressed-TSS across HARs, matched
+CNEs, and random length-matched genomic intervals. This is a follow-up to
+the SHAP result that HARs sit *farther* from brain-expressed TSSes than the
+matched CNEs (Spearman ≈ +0.58 between distance and SHAP), which is the
+opposite of the simple "HARs near brain genes" intuition.
+
+**Rationale:** Matched CNEs are conservation-matched, and conserved noncoding
+elements concentrate near genes — so the reversal could be a property of HARs
+or an artifact of the matching. Comparing both against length-only-matched
+random intervals distinguishes the two. Pre-decided interpretations were
+committed in the script docstring before running the analysis. The script is
+not part of `run_all.sh`; it is run after the main pipeline.

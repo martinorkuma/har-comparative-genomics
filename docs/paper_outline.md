@@ -19,7 +19,7 @@ isn't on the poster, ask whether it really belongs in the paper.
 | Results | ~2 pages | Three subsections: features → classification → interpretation. |
 | Discussion | ~1 page | Biological interpretation, limitations, future work. |
 | References | ~0.5 page | ~15 references max. |
-| Figures (4) + Tables (2) | inline | See list below. |
+| Figures (5) + Tables (3) | inline | See list below. |
 
 ---
 
@@ -30,7 +30,7 @@ Single paragraph, structured roughly:
 - **Background (1-2 sentences):** HARs are noncoding regions conserved across
   vertebrates with rapid human-lineage substitution; their distinctive functional
   contexts remain incompletely characterized.
-- **Question/approach (2-3 sentences):** We compared HARs to length- and
+- **Question/approach (2-3 sentences):** I compared HARs to length- and
   conservation-matched CNEs across 7 genomic features, then trained interpretable
   classifiers (logistic regression and random forest) and used SHAP to identify
   features distinguishing HARs.
@@ -48,7 +48,7 @@ Write this last.
 Three paragraphs:
 
 **P1 — What HARs are.** Define HARs. Brief history (Pollard 2006, Capra 2013).
-~96% noncoding. Multiple HAR sets in the literature; we use [the one you actually
+~96% noncoding. Multiple HAR sets in the literature; I use [the one you actually
 used and why].
 
 **P2 — Why they matter.** Enrichment near brain-expressed genes (early studies).
@@ -94,7 +94,18 @@ from the Boyd 2015 hg19 interval after liftOver to hg38; if absent from the
 modeled Doan HAR table, it is treated as an external reference rather than a
 training-set observation.
 
-**2.7 Code and data availability.** GitHub repo URL, commit hash, conda env file.
+**2.7 Sensitivity analysis: brain-TSS proximity.** To test whether the reversed
+brain-TSS proximity finding (HARs farther from brain-expressed TSSes than matched
+CNEs) reflects a property of HARs or an artifact of conservation matching — since
+conserved noncoding elements concentrate near genes — I generated a third
+comparison set of random genomic intervals matched to HARs on length only
+(BedTools `shuffle` with the HAR set as the source of widths), excluding HARs
+and coding exons so the random set remains noncoding. Distance to the nearest
+brain-expressed TSS was then compared across HAR, matched CNE, and random sets,
+with pairwise Mann-Whitney U tests. Three pre-decided interpretation rules were
+committed before computing the result (see `scripts/05_sensitivity_brain_tss.py`).
+
+**2.8 Code and data availability.** GitHub repo URL, commit hash, conda env file.
 
 ---
 
@@ -117,6 +128,14 @@ top-ranked feature(s) and the direction. Then introduce HARE5 (Figure 4): show
 its feature values within the HAR/CNE distributions; note that it is an external
 Boyd 2015 reference interval scored with the same feature-generation code.
 
+**3.4 Sensitivity: is the brain-TSS proximity reversal a matching artifact?**
+Reference Figure 5 (three-way violin of distance-to-nearest-brain-TSS) and
+Table 3 (per-set median/IQR plus pairwise Mann-Whitney U). Report which of the
+three pre-decided interpretations the data support: random > matched CNE > HAR
+(matching artifact, strongest story); random ≈ matched CNE > HAR (the reversal
+is real and not driven by matching); or random ≈ HAR < matched CNE (matched
+CNEs anomalously proximal).
+
 ---
 
 ## 4. Discussion (~1 page)
@@ -125,8 +144,11 @@ Boyd 2015 reference interval scored with the same feature-generation code.
 in the regulatory landscape human-lineage acceleration tends to fall. Emphasize
 the supported claim: HARs preferentially overlap annotated regulatory elements
 relative to length- and conservation-matched controls, while being farther from
-gene bodies/TSSes than those controls. Connect this to long-range enhancer
-models and Keough 2023 rather than claiming simple proximity to brain genes.
+gene bodies/TSSes than those controls. The sensitivity comparison against random 
+length-matched intervals (§3.4) [confirms / qualifies — fill in based on the result] 
+whether the distance reversal is a property of HARs or a consequence of matching 
+CNEs on conservation. Connect this to long-range enhancer models and Keough 2023 
+rather than claiming simple proximity to brain genes.
 
 **P2 — Why this design works.** The matched-control + interpretable-ML combination
 isolates a signal that genome-background comparisons can't, and reports it in
@@ -154,6 +176,8 @@ calls (Yoo, Rhie et al. 2025).
 | 2 | `roc_curves.png` | ROC + PR curves, 5-fold CV mean | §3.2 |
 | 3 | `shap_summary.png` | SHAP beeswarm (with `shap_bar.png` as inset) | §3.3 |
 | 4 | `hare5_case_study.png` | HARE5's feature values vs HAR/CNE distributions | §3.3 |
+| 5 | `sensitivity_brain_tss.png` | Distance to nearest brain-expressed TSS, 
+HAR vs matched CNE vs random length-matched | §3.4 |
 
 ## Tables
 
@@ -161,6 +185,8 @@ calls (Yoo, Rhie et al. 2025).
 |---|---|---|
 | 1 | `cv_metrics_summary.tsv` | AUROC, AUPRC, accuracy, F1 by model (mean ± SD) |
 | 2 | `top_shap_features.tsv` | Ranked features by mean |SHAP|, with direction |
+| 3 | `sensitivity_brain_tss.tsv` | Brain-TSS distance summary (count, mean, q25/median/q75) 
+per set + pairwise Mann-Whitney U |
 
 ---
 

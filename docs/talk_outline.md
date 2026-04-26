@@ -9,7 +9,7 @@
 
 ## Through-line
 
-> "We trained a small interpretable model to distinguish HARs from matched conserved
+> "I trained a small interpretable model to distinguish HARs from matched conserved
 > elements, asked it which features mattered, and checked the answer at one well-known
 > HAR — HARE5, which sits near *FZD8* in the developing cortex."
 
@@ -62,7 +62,7 @@ doesn't, cut it.
 
 ### Slide 6 — Case study: HARE5 / FZD8 (2 min)
 - Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter.
-- HARE5/2xHAR.238 is not in the modeled Doan HAR table, so we score the lifted-over Boyd interval as an external reference using the same feature sources.
+- HARE5/2xHAR.238 is not in the modeled Doan HAR table, so I scored the lifted-over Boyd interval as an external reference using the same feature sources.
 - Show `hare5_case_study.png`
 - Punchline: the panel anchors the global feature ranking to the real HARE5 locus without pretending it was part of model training.
 
@@ -71,8 +71,11 @@ doesn't, cut it.
   1. Mean phastCons remains partly definitional because the 100-way track includes
      human; residual conservation signal should be acknowledged, not oversold.
   2. cCRE/enhancer annotations are biased toward studied cell types.
-  3. Linear distance-to-gene is a weak proxy for regulatory target; 3D contacts
-     (Keough 2023) would be better.
+  3. Linear distance-to-gene is a weak proxy for regulatory target. I tested
+     whether the surprising reversal (HARs farther from brain TSSes than matched
+     CNEs) was just a matching artifact by adding a length-matched random set as
+     a third group; result on the poster. 3D contacts (Keough 2023) would be a
+     better proxy regardless. 
 - What this means biologically: HARs are more regulatory-element-like than matched
   conserved controls, but they are not simply closer to brain-expressed TSSes.
   That makes long-range regulatory contacts the natural next hypothesis.
@@ -87,10 +90,12 @@ doesn't, cut it.
 ## What's *not* in the talk (deliberately)
 
 - ROC curves and AUROC numbers → on the poster, not in the talk.
-- Logistic regression results → on the poster, mentioned only as "we also trained
+- Logistic regression results → on the poster, mentioned only as "I also trained
   a linear baseline; the ranking is consistent."
 - Feature engineering details → on the poster.
 - Per-feature distribution plots → on the poster.
+- Sensitivity three-way comparison (HAR vs matched CNE vs random) → on the poster, 
+  mentioned in one sentence on slide 7.
 
 These all support the result; they don't *deliver* it. Putting them in the talk would
 dilute the through-line.
@@ -101,7 +106,7 @@ dilute the through-line.
 
 - [ ] Time it. Aim for 8:45 first try, you'll naturally come in around 9:30.
 - [ ] Practice the SHAP slide standalone, twice. It's the hardest one to land.
-- [ ] Make sure HARE5 is *named* on slide 6 and the audience knows why we picked it.
+- [ ] Make sure HARE5 is *named* on slide 6 and the audience knows why I picked it.
 - [ ] Anticipate three questions:
   - "What's your AUC?" — *Have a number ready, but immediately reframe to interpretation.*
   - "Why these 7 features?" — *Each has a specific hypothesis (Slide 4 backup).*
