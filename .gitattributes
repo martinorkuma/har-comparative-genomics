@@ -1,0 +1,32 @@
+# Enforce LF line endings for all text files
+* text=auto eol=lf
+
+# Explicitly declare common text files
+*.py text eol=lf
+*.sh text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.r text eol=lf
+*.R text eol=lf
+
+# Declare binary files to prevent corruption
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.bam binary
+*.bai binary
+*.fa binary
+*.fasta binary
+*.fq binary
+*.fastq binary
