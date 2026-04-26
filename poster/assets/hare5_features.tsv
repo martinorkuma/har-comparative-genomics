@@ -1,0 +1,2 @@
+chrom	start	end	name	label	gc_content	length	mean_phastcons	dist_to_nearest_tss	dist_to_nearest_brain_tss	overlaps_ccre	overlaps_fetal_brain_enh
+chr10	35222797	35223084	2xHAR.238	1	0.46689895470383275	287	0.04543554028885549	7514	23941	0	0

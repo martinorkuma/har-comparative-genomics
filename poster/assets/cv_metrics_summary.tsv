@@ -1,0 +1,5 @@
+	auroc	auroc	auprc	auprc	accuracy	accuracy	f1	f1
+	mean	std	mean	std	mean	std	mean	std
+model								
+logreg	0.66	0.006	0.493	0.012	0.618	0.007	0.46	0.005
+rf	0.777	0.009	0.635	0.012	0.778	0.005	0.491	0.014

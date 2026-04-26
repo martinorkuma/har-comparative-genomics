@@ -1,0 +1,9 @@
+set	count	mean	q25	median	q75
+HAR	2734	415107.0	99182.0	268692.0	555023.0
+Matched CNE	6958	448709.0	45265.0	144533.0	423114.0
+Random length-matched	2734	1073050.0	49379.0	172844.0	603309.0
+
+# Mann-Whitney U (two-sided), distance to nearest brain TSS:
+# HAR vs Matched CNE:    U=1.126e+07  p=2.613e-45
+# HAR vs Random:         U=4.093e+06  p=1.068e-09
+# Matched CNE vs Random: U=8.84e+06  p=5.96e-08

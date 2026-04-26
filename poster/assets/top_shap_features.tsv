@@ -1,0 +1,8 @@
+feature	feature_label	mean_abs_shap	spearman_feat_shap	direction
+mean_phastcons	Mean phastCons	0.11255362177060504	-0.43397045018230035	higher value -> more CNE-like
+dist_to_nearest_brain_tss	log(dist to nearest brain TSS)	0.0878504780730848	0.5784853335992688	higher value -> more HAR-like
+gc_content	GC content	0.06896700630202351	0.2872058926642778	higher value -> more HAR-like
+length	log(length)	0.059568527726771056	0.4456324076850519	higher value -> more HAR-like
+dist_to_nearest_tss	log(dist to nearest TSS)	0.0578028492719356	0.5654483847099903	higher value -> more HAR-like
+overlaps_ccre	Overlaps ENCODE cCRE	0.046652979741202506	0.6746581035503568	higher value -> more HAR-like
+overlaps_fetal_brain_enh	Overlaps fetal-brain enhancer	0.005308840334029353	0.2616877119012367	higher value -> more HAR-like
