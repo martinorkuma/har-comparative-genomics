@@ -60,23 +60,22 @@ doesn't, cut it.
 - *Don't* show the beeswarm here — it has too many moving parts for a talk audience.
   Save it for the poster where people can stare at it.
 
-### Slide 6 — Case study: a functionally prioritized HAR (2 min)
-- Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter, but HARE5 isn't in our HAR set.
-- We instead picked an in-dataset HAR that the model's top-ranked features exemplify: `Prabhakar_HAR810` near NR2C2.
+### Slide 6 — Case study: HARE5 / FZD8 (2 min)
+- Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter.
+- HARE5/2xHAR.238 is not in the modeled Doan HAR table, so we score the lifted-over Boyd interval as an external reference using the same feature sources.
 - Show `hare5_case_study.png`
-- Punchline: the features the model ranks highest are exactly the ones this HAR exemplifies.
+- Punchline: the panel anchors the global feature ranking to the real HARE5 locus without pretending it was part of model training.
 
 ### Slide 7 — Caveats + biological interpretation (90 s)
 - Three honest caveats, fast:
-  1. Matching on length and conservation deliberately removes those signals — what's
-     left is *neighborhood*, which is the question we wanted to ask.
+  1. Mean phastCons remains partly definitional because the 100-way track includes
+     human; residual conservation signal should be acknowledged, not oversold.
   2. cCRE/enhancer annotations are biased toward studied cell types.
-  3. Distance-to-gene is a proxy for regulatory target; 3D contacts (Keough 2023)
-     would be better.
-- What this means biologically: HARs aren't just sequence-accelerated dots; they sit
-  in regulatory neighborhoods that look biased toward [whatever your top feature
-  ends up being]. Consistent with the model that human-lineage regulatory tweaks
-  near brain-relevant genes contributed to cortical evolution.
+  3. Linear distance-to-gene is a weak proxy for regulatory target; 3D contacts
+     (Keough 2023) would be better.
+- What this means biologically: HARs are more regulatory-element-like than matched
+  conserved controls, but they are not simply closer to brain-expressed TSSes.
+  That makes long-range regulatory contacts the natural next hypothesis.
 
 ### Slide 8 — Summary + thanks (30 s)
 - One sentence summary slide, repeating the through-line above.

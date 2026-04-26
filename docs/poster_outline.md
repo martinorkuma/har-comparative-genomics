@@ -72,19 +72,21 @@ The reader's eye should land on the SHAP plot. Everything else either sets it up
   with consistent feature rankings; the project emphasizes interpretation over
   predictive accuracy."*
 
-## Panel 5 — Case study: a functionally prioritized HAR (top-right)
+## Panel 5 — Case study: HARE5 / FZD8 (top-right)
 
-- Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter, but HARE5 isn't in our HAR set.
-- We instead picked an in-dataset HAR that the model's top-ranked features exemplify: `Prabhakar_HAR810` near NR2C2.
-- Show `hare5_case_study.png`. Punchline: the features the model ranks highest are exactly the ones this HAR exemplifies.
+- Motivation: Boyd 2015's HARE5/FZD8 work is the textbook example of why HARs matter.
+- HARE5/2xHAR.238 is not in the modeled Doan HAR table, so `04_interpret.py` scores the lifted-over Boyd interval as an external reference using the same feature sources.
+- Show `hare5_case_study.png`. Punchline: place the real HARE5 interval within the HAR/CNE feature distributions without treating it as a training-set observation.
 
 ## Panel 6 — Conclusions & future (bottom-right)
 
 - Three bullets, in this order:
   1. **Result:** the top SHAP feature(s) most distinguishing HARs from matched CNEs.
-  2. **Biological interpretation:** what this implies about where in the regulatory
-     landscape human-lineage acceleration tends to occur.
-  3. **Limitations & next steps:** annotation bias, distance-to-gene as a proxy for
+  2. **Biological interpretation:** HARs preferentially overlap annotated regulatory
+     elements, while linear TSS distance does not support a simple "near brain genes"
+     story in this matched-control design.
+  3. **Limitations & next steps:** residual phastCons signal, annotation bias,
+     distance-to-gene as a proxy for
      regulatory target, opportunity to extend with 3D contacts (Keough 2023) or
      single-cell brain regulatory atlases.
 - Acknowledgments + references at the bottom.

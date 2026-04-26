@@ -89,8 +89,10 @@ log1p transform on length and distance features, standardized) and random forest
 Metrics reported: AUROC, AUPRC, accuracy, F1.
 
 **2.6 Interpretation.** SHAP TreeExplainer on the random forest refit on all data.
-Mean |SHAP| ranking and direction of effect. HARE5 case study by name match
-(2xHAR.238) or by genomic coordinate fallback if name absent.
+Mean |SHAP| ranking and direction of effect. HARE5/2xHAR.238 case study scored
+from the Boyd 2015 hg19 interval after liftOver to hg38; if absent from the
+modeled Doan HAR table, it is treated as an external reference rather than a
+training-set observation.
 
 **2.7 Code and data availability.** GitHub repo URL, commit hash, conda env file.
 
@@ -112,25 +114,30 @@ support for the interpretation rather than the headline result.
 **3.3 Feature importance and the HARE5 case study.** Reference Figure 3 (SHAP
 beeswarm + bar) and Table 2 (top SHAP features with direction of effect). State
 top-ranked feature(s) and the direction. Then introduce HARE5 (Figure 4): show
-its feature values within the HAR/CNE distributions; note that they exemplify
-exactly what the model identifies as distinguishing.
+its feature values within the HAR/CNE distributions; note that it is an external
+Boyd 2015 reference interval scored with the same feature-generation code.
 
 ---
 
 ## 4. Discussion (~1 page)
 
 **P1 — Biological interpretation.** What top SHAP features tell us about where
-in the regulatory landscape human-lineage acceleration tends to fall. Connect
-to existing literature on HAR enrichment near neurodevelopmental genes.
+in the regulatory landscape human-lineage acceleration tends to fall. Emphasize
+the supported claim: HARs preferentially overlap annotated regulatory elements
+relative to length- and conservation-matched controls, while being farther from
+gene bodies/TSSes than those controls. Connect this to long-range enhancer
+models and Keough 2023 rather than claiming simple proximity to brain genes.
 
 **P2 — Why this design works.** The matched-control + interpretable-ML combination
 isolates a signal that genome-background comparisons can't, and reports it in
 units (feature contributions) that are biologically interpretable.
 
-**P3 — Limitations.** Annotation bias toward studied cell types. Linear-distance
-proxy for regulatory targeting (3D contacts would be better; cite Keough 2023).
-HAR set choice affects results — sensitivity to alternative HAR sets is a
-worthwhile follow-up.
+**P3 — Limitations.** Mean phastCons remains partly definitional because the
+100-way track includes human, so residual conservation signal should be framed
+as expected HAR acceleration rather than an independent discovery. Annotation
+bias toward studied cell types. Linear-distance proxy for regulatory targeting
+(3D contacts would be better; cite Keough 2023). HAR set choice affects results
+— sensitivity to alternative HAR sets is a worthwhile follow-up.
 
 **P4 — Future work.** One paragraph. Strongest extensions: incorporate Hi-C-derived
 target genes (Keough 2023), add cell-type-specific regulatory annotations from

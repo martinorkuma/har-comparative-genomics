@@ -87,15 +87,15 @@ modeling:
 
 # ---- Case study ---------------------------------------------------------
 case_study:
-  name: "Prabhakar_HAR810,Toh_HAR269"
-  alias: "Prabhakar HAR near NR2C2"
+  name: "2xHAR.238"
+  alias: "HARE5 / FZD8 (Boyd 2015)"
   
   # hg19 reference coordinates from Boyd 2015 Table S1
   hg19_chrom: chr10
   hg19_start: 35511725
   hg19_end:   35512012
-  # If the HAR set lacks 2xHAR.238 by name, we'll find the HAR overlapping
-  # the lifted-over interval below.
+  # If the HAR set lacks 2xHAR.238 by name, 04_interpret.py computes an
+  # external HARE5 feature row from the lifted-over interval below.
   fallback_window_bp: 2000
 
 # ---- Output paths -------------------------------------------------------
