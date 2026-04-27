@@ -2,6 +2,10 @@
 
 **Do Human Accelerated Regions (HARs) occupy genomic neighborhoods that differ from matched conserved non-accelerated elements (CNEs)? An interpretable machine-learning analysis.**
 
+![HAR Comparative Genomic poster](docs/Orkuma_HAR_comp_genomics_poster_img.png)
+
+> *Click for full resolution. PDF version: [docs/HAR_Genomic_poster.pdf](docs/Orkuma_HAR_comp_genomics_poster.pdf)*
+
 ---
 
 ## Overview
