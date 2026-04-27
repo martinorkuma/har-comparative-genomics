@@ -11,7 +11,7 @@
 ## Overview
 
 This repository compares Human Accelerated Regions (HARs) with length- and conservation-matched conserved non-accelerated elements (CNEs) using a small set of genomic and regulatory features. 
-The analysis uses interpretable classification models to identify which features best distinguish HARs from matched controls and examines the result at the **HARE5 / FZD8** locus.
+The analysis uses interpretable classification models to identify which features best distinguish HARs from matched controls and examines the results at the **HARE5/FZD8** locus.
 
 The workflow is designed to answer one central question: **which genomic features most clearly separate HARs from matched conserved elements?**
 
@@ -23,14 +23,13 @@ spreadsheet, "Combined HARs from Five Previous Studies") from:
 
   https://www.cell.com/cell/fulltext/S0092-8674(16)31169-2
 
-Save it to `data/raw/doan2016_hars.xlsx`. The pipeline will skip the download
-attempt if the file is already present.
+Save it to `data/raw/doan2016_hars.xlsx`. The pipeline will skip the download attempt if the file is already present.
 
 ## Run the Pipeline
 
 ```bash
 bash setup.sh                                       # one-time: conda env + tool checks
-conda activate har-ml                               # activate conda virtual environ
+conda activate har-ml                               # activate conda virtual environment
 bash scripts/run_all.sh                             # end-to-end pipeline 
 python scripts/05_sensitivity_brain_tss.py          # runs sensitivity check
 ```
@@ -56,7 +55,7 @@ The analysis uses seven features for each genomic element:
 |---|---|---|
 | 1 | GC content | Tests whether HARs differ in sequence composition. |
 | 2 | Element length | Included as a control after matching. |
-| 3 | phastCons 100-way score | Captures deep conservation prior to human-lineage acceleration. |
+| 3 | phastCons 100-way score | Captures deep conservation before human-lineage acceleration. |
 | 4 | Distance to nearest TSS | Measures proximity to annotated genes. |
 | 5 | Distance to nearest brain-expressed TSS | Tests whether HARs are preferentially located near brain-relevant genes. |
 | 6 | Overlap with ENCODE cCRE | Measures overlap with annotated regulatory elements. |
@@ -73,29 +72,29 @@ If another HAR better reflects the top-ranked feature in the final analysis, the
 ```
 har-comparative-genomics/
 ├── README.md
-├── setup.sh                         # one-time env setup
-├── environment.yml                  # conda
-├── requirements.txt                 # pip extras
-├── config.yaml                      # all paths, URLs, parameters
+├── setup.sh                                 # one-time env setup
+├── environment.yml                          # conda
+├── requirements.txt                         # pip extras
+├── config.yaml                              # all paths, URLs, parameters
 ├── .gitignore
 ├── scripts/
-│   ├── 01_acquire.sh                # data download + liftOver + matched CNE construction
-│   ├── 02_build_features.py         # feature engineering
-│   ├── 03_classify.py               # LR + RF + 5-fold CV
-│   ├── 04_interpret.py              # SHAP + HARE5 case study
-│   ├── 05_sensitivity_brain_tss.py  # follow-up: brain-TSS proximity sanity check
-│   └── run_all.sh                   # orchestrator
+│   ├── 01_acquire.sh                        # data download + liftOver + matched CNE construction
+│   ├── 02_build_features.py                 # feature engineering
+│   ├── 03_classify.py                       # LR + RF + 5-fold CV
+│   ├── 04_interpret.py                      # SHAP + HARE5 case study
+│   ├── 05_sensitivity_brain_tss.py          # follow-up: brain-TSS proximity sanity check
+│   └── run_all.sh                           # orchestrator
 ├── data/
-│   ├── raw/                         # downloaded files (gitignored)
-│   └── processed/                   # derived (gitignored)
+│   ├── raw/                                 # downloaded files (gitignored)
+│   └── processed/                           # derived (gitignored)
 ├── outputs/
-│   ├── figures/                     # poster figures
-│   ├── tables/                      # poster tables
-│   └── models/                      # trained classifiers
-├── logs/                            # per-stage logs (gitignored)
+│   ├── figures/                             # poster figures
+│   ├── tables/                              # poster tables
+│   └── models/                              # trained classifiers
+├── logs/                                    # per-stage logs (gitignored)
 └── docs/
-    ├── HAR_comp_genomics_poster_img.png   # poster thumbnail (README)
-    ├── HAR_comp_genomics_poster.pdf       # full-resolution poster
+    ├── HAR_comp_genomics_poster_img.png     # poster thumbnail (README)
+    ├── HAR_comp_genomics_poster.pdf         # full-resolution poster
     └── HAR_comp_genomics_presentation.pptx  # 10-min talk slides
 ```
 
@@ -104,7 +103,7 @@ har-comparative-genomics/
 Primary outputs include:
 - Feature table for HARs and matched CNEs
 - Cross-validation performance summaries
-- Trained random forest model
+- Trained a random forest model
 - ROC figure
 - SHAP summary plot
 - HARE5 case-study figure
